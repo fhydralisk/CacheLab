@@ -52,13 +52,13 @@ class RegisteredEndNodeFactory(nodeTypeRegister: NodeTypeRegister) extends EndNo
   
   def createEndNodeInSystem(nodeType: String, name: String, config: Config)(implicit system: ActorSystem) = {
     nodeTypeRegister.typeOf(nodeType).map { 
-      c => EndNodeContext(system.actorOf(c.props(config)), name, config) 
+      c => EndNodeContext(system.actorOf(c.props(config), name), name, config) 
     }
   }
   
   def createEndNodeInActor(nodeType: String, name: String, config: Config)(implicit context: ActorContext) = {
     nodeTypeRegister.typeOf(nodeType).map { 
-      c => EndNodeContext(context.actorOf(c.props(config)), name, config) 
+      c => EndNodeContext(context.actorOf(c.props(config), name), name, config) 
     }
   }
 }

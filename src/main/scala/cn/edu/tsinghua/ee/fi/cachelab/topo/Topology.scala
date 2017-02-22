@@ -36,7 +36,7 @@ trait MutableTopology[E] extends ImmutableTopology[E] {
 }
 
 trait TopologyWithDefaultPath[EW] extends ImmutableTopology[EW] {
-  val pathType = classOf[JGraphTBasedPathImpl[EndNodeContext, EW]]
+  lazy val pathType = classOf[JGraphTBasedPathImpl[EndNodeContext, EW]]
 }
 
 
@@ -48,7 +48,7 @@ trait TopologyWithGraph[V, E <: DefaultEdge] {
 trait EndNodeTopologyWithGraph[E <: DefaultEdge] extends TopologyWithGraph[EndNodeContext, E] 
 
 trait EndNodeTopologyWithSimpleGraph extends TopologyWithGraph[EndNodeContext, DefaultEdge] {
-  override protected val topoGraph = new SimpleGraph[EndNodeContext, DefaultEdge](edgeType)
+  lazy protected val topoGraph = new SimpleGraph[EndNodeContext, DefaultEdge](edgeType)
 }
 
 
@@ -57,8 +57,7 @@ abstract class ImmutableTopologyImpl[EW, ET <: DefaultEdge](
     edges: Iterable[Tuple2[EndNodeContext, EndNodeContext]],
     protected val edgeType: Class[ET]
     ) extends ImmutableTopology[EW] with EndNodeTopologyWithGraph[ET] {
-  // protected val topoGraph = new SimpleGraph[EndNodeContext, E](edgeType)
-
+  
   nodes.foreach { topoGraph.addVertex }
   edges.foreach { e => topoGraph.addEdge(e._1, e._2) }
   

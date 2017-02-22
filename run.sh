@@ -1,6 +1,6 @@
 #!/bin/bash
 
-MAIN_CLASS="com.nopqzip.App"
+MAIN_CLASS="cn.edu.tsinghua.ee.fi.cachelab.app.TestCaseApp"
 
 if [ -n $1 ]; then
   [ $1 = "watcher" ] && MAIN_CLASS="com.nopqzip.WatcherApp"

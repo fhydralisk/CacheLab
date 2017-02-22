@@ -20,9 +20,6 @@ private[deployment] trait Deployment[E] {
   type NodeMapType <: collection.Map[String, EndNodeContext]
   type TopologyType <: ImmutableTopology[E]
   
-  protected val nodeInfos: Iterable[EndNodeInfo]
-  protected val linkedInfos: Iterable[Deployer.NodeConnectInfo]
-  
   val nodeMap: NodeMapType
   val topology: TopologyType
 }
@@ -30,24 +27,12 @@ private[deployment] trait Deployment[E] {
 private[deployment] trait ImmutableDeployment[E] extends Deployment[E] {
   type NodeMapType = collection.Map[String, EndNodeContext]
   type TopologyType = ImmutableTopology[E]
-  
-  val nodeMap: NodeMapType = createNodeMap(nodeInfos)
-  val topology: TopologyType = createTopology(linkedInfos)
-  
-  protected def createNodeMap(nodeInfos: Iterable[EndNodeInfo]): NodeMapType
-  protected def createTopology(linkedInfos: Iterable[Deployer.NodeConnectInfo]): TopologyType
 }
 
 
 private[deployment] trait MutableDeployment[E] extends Deployment[E] {
   override type NodeMapType = collection.concurrent.Map[String, EndNodeContext]
   type TopologyType = MutableTopology[E]
-  
-  val nodeMap: NodeMapType = createNodeMap(nodeInfos)
-  val topology: TopologyType = createTopology(linkedInfos)
-  
-  protected def createNodeMap(nodeInfos: Iterable[EndNodeInfo]): NodeMapType
-  protected def createTopology(linkedInfos: Iterable[Deployer.NodeConnectInfo]): TopologyType
   
   def deploy(endNode: EndNodeInfo, connect: Iterable[String]): Future[EndNodeContext]
   def destroy(name: String)
@@ -59,8 +44,8 @@ private[deployment] object EmptyEndNodeContext extends EndNodeContext(null, null
 
 abstract class AbstractDeployer(
     typeRegister: NodeTypeRegister, 
-    protected val nodeInfos: Iterable[EndNodeInfo], 
-    protected val linkedInfos: Iterable[Deployer.NodeConnectInfo]
+    nodeInfos: Iterable[EndNodeInfo], 
+    linkedInfos: Iterable[Deployer.NodeConnectInfo]
     )(implicit system: ActorSystem) extends Deployment[Unit] with EndNodeMapper {
   
   protected val nodeFactory: EndNodeFactory = new RegisteredEndNodeFactory(typeRegister)
@@ -71,7 +56,7 @@ abstract class AbstractDeployer(
     import NodeSupervisorMessages._
     import system.dispatcher
     implicit val timeout: Timeout = 500 millis
-
+    
     nodeSupervisor ? DeployNode(info) map {
       case DeployNodeReply(ctx) =>
         ctx
@@ -112,6 +97,9 @@ class ImmutableDeployer(
   
   protected val nodeSupervisor = system.actorOf(NodeSupervisor.props(nodeFactory), nodeSupervisorName)
   
+  val nodeMap: NodeMapType = createNodeMap(nodeInfos)
+  val topology: TopologyType = createTopology(linkedInfos)
+
   def this(typeRegister: NodeTypeRegister)(implicit system: ActorSystem) = this(typeRegister, Iterable.empty, Iterable.empty)(system)
 
   protected def createTopology(linkedInfos: Iterable[Deployer.NodeConnectInfo]): TopologyType = {
@@ -141,13 +129,19 @@ class MutableDeployer(
     )(implicit system: ActorSystem) 
     extends AbstractDeployer(typeRegister, nodeInfos, linkedInfos) with MutableDeployment[Unit] {
   
+  protected val nodeSupervisor = system.actorOf(NodeSupervisor.props(nodeFactory), nodeSupervisorName)
+
+  val nodeMap: NodeMapType = createNodeMap(nodeInfos)
+  val topology: TopologyType = createTopology(linkedInfos)
+  
   val topologyManagerName = "TopologyManager"
   val deployManagerName = "DeployManager"
   
   protected val topologyManager = system.actorOf(TopologyManager.props(topology, this), topologyManagerName)
   protected val deployManager = system.actorOf(DeployManager.props(this), deployManagerName) 
-  protected val nodeSupervisor = system.actorOf(NodeSupervisor.props(nodeFactory), nodeSupervisorName)
   
+  
+
   import system.dispatcher
   
   protected def setFutureNodeMap(nodeName: String, nodeContextFuture: Future[EndNodeContext]) = {

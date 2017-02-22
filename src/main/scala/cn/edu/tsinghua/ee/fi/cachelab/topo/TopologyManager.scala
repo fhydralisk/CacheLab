@@ -11,6 +11,7 @@ class TopologyManager(topology: MutableTopology[Unit], mapper: EndNodeMapper) ex
   import TopologyMessages._
   def receive = {
     case GetPath(from, to) =>
+      log.debug("Receiving getpath message")
       try {
         val path = topology.getShortestPath(mapper.contextFromName(from).get, mapper.contextFromName(to).get)
         sender ! GetPathReply(path)
