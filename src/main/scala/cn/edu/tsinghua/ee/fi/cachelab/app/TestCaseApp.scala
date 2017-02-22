@@ -5,7 +5,7 @@ import akka.pattern.ask
 import com.typesafe.config.ConfigFactory
 import scala.concurrent.duration._
 import akka.util.Timeout
-import cn.edu.tsinghua.ee.fi.cachelab.topo.{EndNodeInfo, EndNodeCreator}
+import cn.edu.tsinghua.ee.fi.cachelab.topo.{EndNodeInfo, EndNodeCreator, Path, EndNodeContext}
 import cn.edu.tsinghua.ee.fi.cachelab.topo.CommonMapBasedTypeRegister
 import cn.edu.tsinghua.ee.fi.cachelab.nodes.{Client, Server, Switch}
 import cn.edu.tsinghua.ee.fi.cachelab.nodes.sdncache.{Controller, Redirector, CacheSDN}
@@ -50,6 +50,10 @@ object TestCaseApp {
     topoMan ? GetPath("c1", "sv1") map {
       case GetPathReply(s) =>
         println(s.getNodeSequence)
+        println(getNextNodeName(s, "c1"))
+        println(getNextNodeName(s, "r1"))
+        println(getNextNodeName(s, "sv1"))
+        println(getNextNodeName(s, "cc1"))
     } recover {
       case e: Throwable =>
         println(e)
@@ -61,5 +65,9 @@ object TestCaseApp {
       val config = ConfigFactory.parseString(s"name = $nodeNamePrefix$n")
       new EndNodeInfo(nodeType, s"$nodeNamePrefix$n", config)
     } toSet
+  }
+  
+  def getNextNodeName(path: Path[EndNodeContext, _], currentNode: String ): String = {
+    path.getNextNodeFromString(currentNode) map {_.endNodeName} getOrElse { "None" }
   }
 }

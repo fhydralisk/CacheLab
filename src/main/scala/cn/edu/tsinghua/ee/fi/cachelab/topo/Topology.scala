@@ -12,7 +12,7 @@ import scala.collection.JavaConverters._
  */
 trait ImmutableTopology[EW] {  
   // get the shortest path form node to node
-  val pathType: Class[_ <: Path[EndNodeContext, EW]]
+  val pathType: Class[_ <: EndNodePath[EW]]
   def getShortestPath(from: EndNodeContext, to: EndNodeContext): Path[EndNodeContext, EW]
 }
 
@@ -36,7 +36,7 @@ trait MutableTopology[E] extends ImmutableTopology[E] {
 }
 
 trait TopologyWithDefaultPath[EW] extends ImmutableTopology[EW] {
-  lazy val pathType = classOf[JGraphTBasedPathImpl[EndNodeContext, EW]]
+  lazy val pathType = classOf[EndNodePathImpl[EW]]
 }
 
 
@@ -51,6 +51,8 @@ trait EndNodeTopologyWithSimpleGraph extends TopologyWithGraph[EndNodeContext, D
   lazy protected val topoGraph = new SimpleGraph[EndNodeContext, DefaultEdge](edgeType)
 }
 
+
+class EndNodePathImpl[E](path: GraphPath[EndNodeContext, E]) extends JGraphTBasedPathImpl[EndNodeContext, E](path) with EndNodePath[E]
 
 abstract class ImmutableTopologyImpl[EW, ET <: DefaultEdge](
     nodes: Iterable[EndNodeContext],
@@ -67,7 +69,7 @@ abstract class ImmutableTopologyImpl[EW, ET <: DefaultEdge](
   def getShortestPath(from: EndNodeContext, to: EndNodeContext): Path[EndNodeContext, EW] = {
     if (topoGraph.containsVertex(from) && topoGraph.containsVertex(to)) {
       val constructor = pathType.getConstructor(classOf[GraphPath[EndNodeContext, _ <: DefaultEdge]])
-      constructor.newInstance(dijkstraAlg.getPath(from, to))
+      constructor.newInstance(dijkstraAlg.getPath(from, to)) 
     } else {
       throw new java.lang.IllegalArgumentException("No such node")
     }
