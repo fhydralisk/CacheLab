@@ -5,13 +5,8 @@ import cn.edu.tsinghua.ee.fi.cachelab.topo.{EndNodeActor, EndNodeCreator}
 
 import cn.edu.tsinghua.ee.fi.cachelab.algorithm.CacheAlgorithm
 
-object AbstractCache extends EndNodeCreator {
-  def props(config: Config) = {
-    throw new java.lang.RuntimeException("Abstract actor cannot be created.")
-  }
-}
 
-abstract class AbstractCache(config: Config) extends MiddleBox(config) {
+abstract class AbstractCache(name: String, config: Config) extends MiddleBox(name, config) {
   def volume: Int
   val cacheAlgorithm: CacheAlgorithm
   

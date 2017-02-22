@@ -7,10 +7,10 @@ import cn.edu.tsinghua.ee.fi.cachelab.nodes.AbstractNodeActor
 
 
 object Controller extends EndNodeCreator {
-  def props(config: Config) = Props(new Controller(config))
+  def props(name: String, config: Config) = Props(new Controller(name, config))
 }
 
-class Controller(config: Config) extends AbstractNodeActor(config) {
+class Controller(name: String, config: Config) extends AbstractNodeActor(name, config) {
   
   def nodeMsg = {
     case _ =>

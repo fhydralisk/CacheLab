@@ -7,10 +7,10 @@ import cn.edu.tsinghua.ee.fi.cachelab.topo.EndNodeCreator
 import cn.edu.tsinghua.ee.fi.cachelab.util.URL
 
 object Client extends EndNodeCreator {
-  def props(config: Config) = Props(new Client(config))
+  def props(name: String, config: Config) = Props(new Client(name, config))
 }
 
-class Client(config: Config) extends AbstractNodeActor(config) {
+class Client(name: String, config: Config) extends AbstractNodeActor(name, config) {
   def sendHttpRequest(url: URL) {
     
   }

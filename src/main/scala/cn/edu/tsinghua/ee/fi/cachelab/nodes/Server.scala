@@ -6,11 +6,11 @@ import cn.edu.tsinghua.ee.fi.cachelab.topo.EndNodeCreator
 
 
 object Server extends EndNodeCreator {
-  def props(config: Config) = Props(new Server(config))
+  def props(name: String, config: Config) = Props(new Server(name, config))
   
 }
 
-class Server(config: Config) extends AbstractNodeActor(config) {
+class Server(name: String, config: Config) extends AbstractNodeActor(name, config) {
   def nodeMsg = {
     case _ =>
   }

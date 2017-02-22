@@ -6,10 +6,10 @@ import cn.edu.tsinghua.ee.fi.cachelab.topo.EndNodeCreator
 
 
 object Switch extends EndNodeCreator {
-  def props(config: Config) = Props(new Switch(config))
+  def props(name: String, config: Config) = Props(new Switch(name, config))
 }
 
-class Switch(config: Config) extends NetWare(config) {
+class Switch(name: String, config: Config) extends NetWare(name, config) {
   def nodeMsg = {
     case _ =>
   }

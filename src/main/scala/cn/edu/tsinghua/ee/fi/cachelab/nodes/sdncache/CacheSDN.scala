@@ -7,10 +7,10 @@ import cn.edu.tsinghua.ee.fi.cachelab.nodes.AbstractCache
 
 
 object CacheSDN extends EndNodeCreator {
-  def props(config: Config) =  Props(new CacheSDN(config))
+  def props(name:String, config: Config) =  Props(new CacheSDN(name, config))
 }
 
-class CacheSDN(config: Config) extends AbstractCache(config) {
+class CacheSDN(name:String, config: Config) extends AbstractCache(name, config) {
   
   val cacheAlgorithm = null
   def volume = 10

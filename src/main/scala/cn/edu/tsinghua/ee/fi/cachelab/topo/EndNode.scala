@@ -1,7 +1,7 @@
 package cn.edu.tsinghua.ee.fi.cachelab.topo
 
 import akka.actor.{Actor, ActorRef, Props, ActorSystem, ActorContext}
-import com.typesafe.config.Config
+import com.typesafe.config.{Config, ConfigValueFactory}
 import cn.edu.tsinghua.ee.fi.cachelab.messages.Tick
 
 
@@ -31,7 +31,7 @@ trait EndNodeFactory {
 
 
 trait EndNodeCreator {
-  def props(config: Config): Props
+  def props(name: String, config: Config): Props
 }
 
 
@@ -52,13 +52,17 @@ class RegisteredEndNodeFactory(nodeTypeRegister: NodeTypeRegister) extends EndNo
   
   def createEndNodeInSystem(nodeType: String, name: String, config: Config)(implicit system: ActorSystem) = {
     nodeTypeRegister.typeOf(nodeType).map { 
-      c => EndNodeContext(system.actorOf(c.props(config), name), name, config) 
+      c => EndNodeContext(system.actorOf(c.props(name, config), name), name, defaultConfig(config, name)) 
     }
   }
   
   def createEndNodeInActor(nodeType: String, name: String, config: Config)(implicit context: ActorContext) = {
     nodeTypeRegister.typeOf(nodeType).map { 
-      c => EndNodeContext(context.actorOf(c.props(config), name), name, config) 
+      c => EndNodeContext(context.actorOf(c.props(name, config), name), name, defaultConfig(config, name)) 
     }
+  }
+  
+  def defaultConfig(config: Config, name: String): Config = {
+    config.withValue("name", ConfigValueFactory.fromAnyRef(name))
   }
 }

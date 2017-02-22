@@ -6,10 +6,10 @@ import cn.edu.tsinghua.ee.fi.cachelab.topo.EndNodeCreator
 import cn.edu.tsinghua.ee.fi.cachelab.nodes.MiddleBox
 
 object Redirector extends EndNodeCreator {
-  def props(config: Config) = Props(new Redirector(config))  
+  def props(name: String, config: Config) = Props(new Redirector(name, config))  
 }
 
-class Redirector(config: Config) extends MiddleBox(config) {
+class Redirector(name: String, config: Config) extends MiddleBox(name, config) {
   val redirectTable: RedirectTable = new RedirectTable
   
   def nodeMsg = {
