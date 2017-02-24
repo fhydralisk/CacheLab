@@ -3,6 +3,7 @@ package cn.edu.tsinghua.ee.fi.cachelab.nodes
 import akka.actor.Props
 import com.typesafe.config.Config
 import cn.edu.tsinghua.ee.fi.cachelab.topo.EndNodeCreator
+import cn.edu.tsinghua.ee.fi.cachelab.topo.EndNodePath
 
 
 object Switch extends EndNodeCreator {
@@ -16,6 +17,10 @@ class Switch(name: String, config: Config) extends NetWare(name, config) {
   
   def tick() {
   
+  }
+  
+  def receiveMessage[T, E](message: T, path: EndNodePath[E]) {
+    
   }
   
 }

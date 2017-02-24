@@ -3,6 +3,7 @@ package cn.edu.tsinghua.ee.fi.cachelab.nodes.sdncache
 import akka.actor.Props
 import com.typesafe.config.Config
 import cn.edu.tsinghua.ee.fi.cachelab.topo.EndNodeCreator
+import cn.edu.tsinghua.ee.fi.cachelab.topo.EndNodePath
 import cn.edu.tsinghua.ee.fi.cachelab.nodes.AbstractCache
 
 
@@ -20,6 +21,10 @@ class CacheSDN(name:String, config: Config) extends AbstractCache(name, config) 
   }
   
   def tick() {
+    
+  }
+  
+  def receiveMessage[T, E](message: T, path: EndNodePath[E]) {
     
   }
   

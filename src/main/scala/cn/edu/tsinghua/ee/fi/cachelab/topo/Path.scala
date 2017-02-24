@@ -15,15 +15,17 @@ trait Path[V, EW] {
     else
       None
   }
-  
+}
+
+trait StringNodeGetter[V] {
   def getNextNodeFromString(node: String): Option[V]
 }
 
-trait EndNodePath[EW] extends Path[EndNodeContext, EW] {
+trait EndNodePath[EW] extends Path[EndNodeContext, EW] with StringNodeGetter[EndNodeContext]{
   def getNextNodeFromString(node: String) = {
     val it = getNodeSequence.iterator 
     if (it.find( _.endNodeName == node ) == None)
-      throw new java.lang.IllegalArgumentException("endnode not in path")
+      throw new java.lang.NoSuchFieldException("endnode not in path")
     else if (it.hasNext) 
       Some(it.next()) 
     else 
@@ -32,7 +34,7 @@ trait EndNodePath[EW] extends Path[EndNodeContext, EW] {
 }
 
 
-abstract class JGraphTBasedPathImpl[V, EW](path: GraphPath[V, EW]) extends Path[V, EW]{
+class JGraphTBasedPathImpl[V, EW, ET](path: GraphPath[V, ET]) extends Path[V, EW]{
   def getNodeSequence: Iterable[V] = {
     path.getVertexList().asScala
   }

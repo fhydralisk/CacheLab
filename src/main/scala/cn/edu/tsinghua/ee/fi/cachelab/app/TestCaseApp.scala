@@ -5,7 +5,7 @@ import akka.pattern.ask
 import com.typesafe.config.ConfigFactory
 import scala.concurrent.duration._
 import akka.util.Timeout
-import cn.edu.tsinghua.ee.fi.cachelab.topo.{EndNodeInfo, EndNodeCreator, Path, EndNodeContext}
+import cn.edu.tsinghua.ee.fi.cachelab.topo.{EndNodeInfo, EndNodeCreator, EndNodePath, EndNodeContext}
 import cn.edu.tsinghua.ee.fi.cachelab.topo.CommonMapBasedTypeRegister
 import cn.edu.tsinghua.ee.fi.cachelab.nodes.{Client, Server, Switch}
 import cn.edu.tsinghua.ee.fi.cachelab.nodes.sdncache.{Controller, Redirector, CacheSDN}
@@ -58,6 +58,12 @@ object TestCaseApp {
       case e: Throwable =>
         println(e)
     }
+    
+    import cn.edu.tsinghua.ee.fi.cachelab.messages.TestCase._
+    deployer.contextFromName("c1") foreach { node =>
+      system.actorSelection(node.endNodePath) ! TestSendMessage("sv1", TestEmptyMessage(false))
+      system.actorSelection(node.endNodePath) ! TestAskMessage("sv1", TestEmptyMessage(true))
+    }
   }
   
   def formTestNodes(nodeType: String, nodeNamePrefix: String, count: Int) = {
@@ -67,7 +73,7 @@ object TestCaseApp {
     } toSet
   }
   
-  def getNextNodeName(path: Path[EndNodeContext, _], currentNode: String ): String = {
+  def getNextNodeName(path: EndNodePath[_], currentNode: String ): String = {
     path.getNextNodeFromString(currentNode) map {_.endNodeName} getOrElse { "None" }
   }
 }

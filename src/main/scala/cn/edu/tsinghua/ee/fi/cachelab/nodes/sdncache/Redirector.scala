@@ -3,6 +3,7 @@ package cn.edu.tsinghua.ee.fi.cachelab.nodes.sdncache
 import akka.actor.Props
 import com.typesafe.config.Config
 import cn.edu.tsinghua.ee.fi.cachelab.topo.EndNodeCreator
+import cn.edu.tsinghua.ee.fi.cachelab.topo.EndNodePath
 import cn.edu.tsinghua.ee.fi.cachelab.nodes.MiddleBox
 
 object Redirector extends EndNodeCreator {
@@ -20,6 +21,9 @@ class Redirector(name: String, config: Config) extends MiddleBox(name, config) {
     
   }
   
+  def receiveMessage[T, E](message: T, path: EndNodePath[E]) {
+    
+  }
 }
 
 class RedirectTable {

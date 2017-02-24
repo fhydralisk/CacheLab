@@ -13,7 +13,7 @@ import scala.collection.JavaConverters._
 trait ImmutableTopology[EW] {  
   // get the shortest path form node to node
   val pathType: Class[_ <: EndNodePath[EW]]
-  def getShortestPath(from: EndNodeContext, to: EndNodeContext): Path[EndNodeContext, EW]
+  def getShortestPath(from: EndNodeContext, to: EndNodeContext): EndNodePath[EW]
 }
 
 
@@ -36,7 +36,7 @@ trait MutableTopology[E] extends ImmutableTopology[E] {
 }
 
 trait TopologyWithDefaultPath[EW] extends ImmutableTopology[EW] {
-  lazy val pathType = classOf[EndNodePathImpl[EW]]
+  lazy val pathType = classOf[EndNodePathImpl[EW, DefaultEdge]]
 }
 
 
@@ -52,7 +52,7 @@ trait EndNodeTopologyWithSimpleGraph extends TopologyWithGraph[EndNodeContext, D
 }
 
 
-class EndNodePathImpl[E](path: GraphPath[EndNodeContext, E]) extends JGraphTBasedPathImpl[EndNodeContext, E](path) with EndNodePath[E]
+class EndNodePathImpl[EW, ET](path: GraphPath[EndNodeContext, ET]) extends JGraphTBasedPathImpl[EndNodeContext, EW, ET](path) with EndNodePath[EW]
 
 abstract class ImmutableTopologyImpl[EW, ET <: DefaultEdge](
     nodes: Iterable[EndNodeContext],
@@ -66,7 +66,7 @@ abstract class ImmutableTopologyImpl[EW, ET <: DefaultEdge](
   // TEST: if topoGraph is modified, shall we create a new dijkstra alg? Result: It's OKAY
   val dijkstraAlg = new DijkstraShortestPath[EndNodeContext, ET](topoGraph)
   
-  def getShortestPath(from: EndNodeContext, to: EndNodeContext): Path[EndNodeContext, EW] = {
+  def getShortestPath(from: EndNodeContext, to: EndNodeContext): EndNodePath[EW] = {
     if (topoGraph.containsVertex(from) && topoGraph.containsVertex(to)) {
       val constructor = pathType.getConstructor(classOf[GraphPath[EndNodeContext, _ <: DefaultEdge]])
       constructor.newInstance(dijkstraAlg.getPath(from, to)) 

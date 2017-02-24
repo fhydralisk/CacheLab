@@ -150,7 +150,7 @@ class MutableDeployer(
     nodeContextFuture map { e =>
       nodeMap get nodeName filter (_ == EmptyEndNodeContext) map { _ => nodeMap += nodeName -> e; Unit } getOrElse {
         // Maybe some called destroy before it has been created successfully
-        e.endNodeRef ! PoisonPill
+        system.actorSelection(e.endNodePath) ! PoisonPill
         //throw new java.lang.RuntimeException("EndNodeContext placeholder (EmptyEndNodeContext) lost.")
       }
       e
@@ -190,7 +190,7 @@ class MutableDeployer(
   def destroy(name: String) {
     val nodeContext = contextFromName(name)
     nodeContext foreach { n =>
-      n.endNodeRef ! PoisonPill
+      system.actorSelection(n.endNodePath) ! PoisonPill
       topology -= n
       nodeMap -= n.endNodeName
     }
