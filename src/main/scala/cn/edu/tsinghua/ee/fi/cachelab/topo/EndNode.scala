@@ -22,7 +22,9 @@ trait EndNodeActor extends Actor {
   override def receive: Actor.Receive = tickMsg orElse envelopeMsg orElse nodeMsg
   
   def tickMsg: Actor.Receive = {
-    case _ : Tick => this.tick()
+    case _ : Tick =>
+      this.tick()
+      tickCounter += 1
   }
   
   def envelopeMsg: Actor.Receive = {

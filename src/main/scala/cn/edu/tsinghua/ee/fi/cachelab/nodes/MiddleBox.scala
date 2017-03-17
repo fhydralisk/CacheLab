@@ -18,7 +18,7 @@ abstract class MiddleBox(name: String, config: Config) extends AbstractNodeActor
           envl.path.getNextNodeFromString(name) map { _ =>
             Forward()
           } getOrElse {
-            log.debug("Unhandle an envelope which sholud be marked as Unpack.")
+            log.debug("Unhandled envelope which should be marked as Unpack.")
             Unpack()
           }
         } catch {

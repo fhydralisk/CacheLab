@@ -8,10 +8,10 @@ import cn.edu.tsinghua.ee.fi.cachelab.nodes.AbstractCache
 
 
 object CacheSDN extends EndNodeCreator {
-  def props(name:String, config: Config) =  Props(new CacheSDN(name, config))
+  def props(name: String, config: Config) =  Props(new CacheSDN(name, config))
 }
 
-class CacheSDN(name:String, config: Config) extends AbstractCache(name, config) {
+class CacheSDN(name: String, config: Config) extends AbstractCache(name, config) {
   
   val cacheAlgorithm = null
   def volume = 10
@@ -25,7 +25,7 @@ class CacheSDN(name:String, config: Config) extends AbstractCache(name, config) 
   }
   
   def receiveMessage[T, E](message: T, path: EndNodePath[E]) {
-    
+
   }
   
 }
